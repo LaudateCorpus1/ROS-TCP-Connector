@@ -9,7 +9,7 @@ To this end, we provide multiple layers of configurability.
 First and foremost, the set of visualizers to use is entirely up to the user: each visualizer is a MonoBehaviour component that lives in the Unity scene. (To get them started, we've made a prefab they can just drag into the scene).
 This gives the user a nice obvious workflow for editing visualizer settings (select the relevant component, use the inspector to edit it), and it's also easy to understand how to add, remove, enable or disable visualizers as desired.
 
-<img src="images~/VisualizationSuiteExample.png">
+<img src="images~/VisualizationSuiteExample.PNG">
 
 # Visualization Flow
 
