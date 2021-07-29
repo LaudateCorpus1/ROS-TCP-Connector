@@ -21,6 +21,8 @@ This diagram illustrates the important components and their roles in the most co
 
 2. Once a visualizer has been obtained, we have it create an IVisual for the given message.
 
+3. Recycle the old IVisual (not shown in the diagram, for simplicity) - give the new IVisual the opportunity to reuse data and components from the old one. (This step is done for efficiency. What this means in practice is that it [steals the existing BasicDrawing and clears its contents](https://github.com/Unity-Technologies/ROS-TCP-Connector/blob/375209334c1dcda093ed22e0bffbadcf81f22cff/com.unity.robotics.message-visualizations/Runtime/Scripts/DrawingVisual.cs#L75). This optimization significantly reduces the amount of garbage collection we have to do.)
+
 3. The visual creates whatever graphical, hud or other elements are necessary.
 
 4. The visual is stored in the RosTopicState so that it can be cleaned up later if a new message is received, or the user turns off this visualization.
