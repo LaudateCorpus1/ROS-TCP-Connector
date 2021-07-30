@@ -17,7 +17,7 @@ This gives the user a nice obvious workflow for editing visualizer settings (sel
 
 This diagram illustrates the important components and their roles in the most common case - visualizing a message that was just sent or received. You can follow along with the code in the [UpdateVisual](https://github.com/Unity-Technologies/ROS-TCP-Connector/blob/91c1dbca71987dab30bea508bdc173a2ecb63d55/com.unity.robotics.ros-tcp-connector/Runtime/TcpConnector/RosTopicState.cs#L161) function if you're interested.
 
-1. The RosTopicState class, which represents everything to do with a specific topic within RosConnection, is notified that a message has been sent or received, and calls out to VisualizationRegistry to get the appropriate visualizer (IVisualFactory) for this message.
+1. The RosTopicState class, which represents everything to do with a specific topic within RosConnection, is notified that a message has been sent or received, and calls out to VisualFactoryRegistry to get the appropriate visualizer (IVisualFactory) for this message.
 
 2. Once a visualizer has been obtained, we have it create an IVisual for the given message.
 
@@ -27,11 +27,11 @@ This diagram illustrates the important components and their roles in the most co
 
 4. The visual is stored in the RosTopicState so that it can be cleaned up later if a new message is received, or the user turns off this visualization.
 
-# VisualizationRegistry
+# VisualFactoryRegistry
 
 https://github.com/Unity-Technologies/ROS-TCP-Connector/blob/laurie/HudRefactor/com.unity.robotics.ros-tcp-connector/Runtime/MessageVisualization/VisualFactoryRegistry.cs
 - This static class keeps track of what visualizers exist, and will pick a suitable visualizer for a given topic and message.
-- Each visualizer is expected to register itself with the VisualizationRegistry at startup.
+- Each visualizer is expected to register itself with the VisualFactoryRegistry at startup.
 - There are two different ways to register a visualizer - by message type, or by topic.
     - Registering by topic takes priority: it means that your visualizer is responsible for all messages sent or received on that topic.
 	- Registering by message type means that your visualizer will handle all messages of that type that don't have a specific topic visualizer.
@@ -40,7 +40,7 @@ https://github.com/Unity-Technologies/ROS-TCP-Connector/blob/laurie/HudRefactor/
 
 # IVisualFactory vs IVisual
 
-- Each visualizer implements the IVisualFactory interface. This is the type that gets registered in the VisualizationRegistry. IVisualFactory is responsible for creating IVisuals (as the name implies).
+- Each visualizer implements the IVisualFactory interface. This is the type that gets registered in the VisualFactoryRegistry. IVisualFactory is responsible for creating IVisuals (as the name implies).
 - The main function in IVisualFactory is `IVisual CreateVisual(Message message, MessageMetadata meta)`. As that function signature implies, each IVisual represents the visualization of one specific message.
 - There can be many IVisuals active at once. The key idea here is that a single visualizer doesn't just show one visualization at a time. For example, maybe we have only one visualizer for Point messages, but it might be required to draw multiple points - when there are Point messages being sent on multiple topics for example.
 
