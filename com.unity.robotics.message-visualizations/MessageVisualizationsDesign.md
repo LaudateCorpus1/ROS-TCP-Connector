@@ -36,6 +36,7 @@ https://github.com/Unity-Technologies/ROS-TCP-Connector/blob/laurie/HudRefactor/
     - Registering by topic takes priority: it means that your visualizer is responsible for all messages sent or received on that topic.
 	- Registering by message type means that your visualizer will handle all messages of that type that don't have a specific topic visualizer.
 - All our default visualizers have a "topic" field; if you provide one, they will register themselves by topic. If you leave it blank, they will register by message type.
+- In addition to the topic/type separation, visualizers are registered with a "priority" value. All the default visualizers we have in the prefab are set to low priority, so we will use any default-priority visualizer in the scene.
 
 
 # IVisualFactory vs IVisual
