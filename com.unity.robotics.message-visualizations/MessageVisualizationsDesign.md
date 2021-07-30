@@ -25,7 +25,7 @@ This diagram illustrates the important components and their roles in the most co
 
 3. The visual creates whatever graphical, hud or other elements are necessary.
 
-4. The visual is stored in the RosTopicState so that it can be cleaned up later if a new message is received, or the user turns off this visualization.
+4. The visual is stored in the RosTopicState so that it can be cleaned up/recycled later when a new message is received, or hidden if the user turns off this visualization.
 
 # VisualFactoryRegistry
 
