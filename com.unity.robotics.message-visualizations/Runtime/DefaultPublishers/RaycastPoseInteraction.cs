@@ -1,31 +1,23 @@
 using System;
-using RosMessageTypes.Geometry;
-using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
 
 namespace Unity.Robotics.MessageVisualizers
 {
-    public abstract class PoseRaycastPublisher : RaycastPublisher
+    public class RaycastPoseInteraction : RaycastInteraction
     {
         [SerializeField]
         Color m_Color;
         BasicDrawing m_ArrowDrawing;
-        Vector3[] m_MouseClicks = new Vector3[2];
 
-        // Start is called before the first frame update
         public override void Start()
         {
             base.Start();
             m_ArrowDrawing = BasicDrawingManager.CreateDrawing();
         }
 
-        // Update is called once per frame
         void Update()
         {
-            if (!ValidClick())
-            {
-                return;
-            }
+            if (!ValidClick()) return;
 
             if (Input.GetMouseButtonDown(0)) // Begin click
             {
@@ -59,6 +51,7 @@ namespace Unity.Robotics.MessageVisualizers
             if (didHit)
             {
                 m_ArrowDrawing.Clear();
+
                 // Draw normalized arrow in direction of mouse position
                 m_ArrowDrawing.DrawArrow(m_MouseClicks[0],
                     1.5f * Vector3.Normalize(hit.point - m_MouseClicks[0]) + m_MouseClicks[0], m_Color,
@@ -66,7 +59,7 @@ namespace Unity.Robotics.MessageVisualizers
             }
         }
 
-        protected virtual bool ReleaseClick()
+        void ReleaseClick()
         {
             m_ArrowDrawing.Clear();
             var (didHit, hit) = RaycastCheck(ClickState.Held);
@@ -74,23 +67,25 @@ namespace Unity.Robotics.MessageVisualizers
             {
                 m_MouseClicks[1] = hit.point;
                 m_State = ClickState.None;
+                Broadcast(CalculatePose());
             }
-
-            return didHit;
         }
 
         /// <summary>
-        /// Calculates and formats ROS-formatted PoseMsg based on mouse interactions
+        ///     Calculates and formats pose based on mouse interactions
         /// </summary>
-        protected PoseMsg CalculatePoseMsg()
+        (Vector3, Quaternion) CalculatePose()
         {
             var diff = (m_MouseClicks[1] - m_MouseClicks[0]).normalized;
             var rot = diff == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(diff);
-            return new PoseMsg
-            {
-                position = m_MouseClicks[0].To<FLU>(),
-                orientation = rot.To<FLU>()
-            };
+            return (m_MouseClicks[0], rot);
+        }
+
+        void Broadcast((Vector3, Quaternion) result)
+        {
+            m_RosPublish.PublishPose(result);
+            m_State = ClickState.None;
+            m_RosPublish.ResetTrigger();
         }
     }
 }
